@@ -12,7 +12,7 @@ const fetchCountries = async () => {
   const mapped = Object.values(asJson.result)
     .map((x: any) => x.name)
     .sort()
-    .map((x) => ({ name: x.toLowerCase() }));
+    .map((x) => ({ name: x && x.toLowerCase() }));
   return mapped as Country[];
 };
 
