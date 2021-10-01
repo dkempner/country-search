@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { InferGetStaticPropsType } from "next";
 import Link from "next/link";
 
@@ -12,7 +12,7 @@ const fetchCountries = async () => {
   const mapped = Object.values(asJson.result)
     .map((x: any) => x.name)
     .sort()
-    .map((x) => ({ name: x }));
+    .map((x) => ({ name: x.toLowerCase() }));
   return mapped as Country[];
 };
 
@@ -25,10 +25,19 @@ export const getStaticProps = async () => {
   };
 };
 
+const uppercaseFirst = (country: Country) => {
+  return country.name.charAt(0).toUpperCase() + country.name.slice(1);
+};
+
 function Countries({
   countries,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
   const [search, setSearch] = useState("");
+  const [lastCountries, setLastCountries] = useState<string[]>([]);
+
+  useEffect(() => {
+    setLastCountries(JSON.parse(localStorage.getItem("last") || "[]"));
+  }, []);
 
   const filteredCountries = countries.filter((c) =>
     c.name.toLowerCase().includes(search.toLowerCase())
@@ -36,6 +45,13 @@ function Countries({
 
   return (
     <>
+      <div>
+        <ul>
+          {lastCountries.map((c) => (
+            <li key={c}>{uppercaseFirst({name: c})}</li>
+          ))}
+        </ul>
+      </div>
       <label htmlFor="country-search">Search:</label>
       <input
         id="country-search"
@@ -47,7 +63,11 @@ function Countries({
         <tbody>
           {filteredCountries.map((country) => (
             <tr key={country.name}>
-              <td>{country.name}</td>
+              <td>
+                <Link href={`/countries/${country.name}`}>
+                  {uppercaseFirst(country)}
+                </Link>
+              </td>
             </tr>
           ))}
         </tbody>
