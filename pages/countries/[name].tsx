@@ -13,7 +13,7 @@ const fetchCountries = async () => {
   const mapped = Object.values(asJson.result)
     .map((x: any) => x.name)
     .sort()
-    .map((x) => ({ name:x && x.toLowerCase() }));
+    .map((x) => ({ name: x && x.toLowerCase() }));
   return mapped as Country[];
 };
 
@@ -22,7 +22,7 @@ export async function getStaticPaths() {
   const paths = countries.map((c) => ({
     params: { name: c.name },
   }));
-  return { paths, fallback: false };
+  return { paths, fallback: "blocking" };
 }
 
 const firstLetter = (country: Country) => {
@@ -30,9 +30,12 @@ const firstLetter = (country: Country) => {
 };
 
 export const getStaticProps = async ({ params }: { params: Country }) => {
+  await new Promise((resolve) => {
+    setTimeout(resolve, Math.random() * 100);
+  });
   const { name } = params;
 
-  const allCountries = await await fetchCountries();
+  const allCountries = await fetchCountries();
 
   const letterMatchCountries = allCountries
     .filter((c) => {
@@ -53,22 +56,21 @@ export const getStaticProps = async ({ params }: { params: Country }) => {
 };
 
 const uppercaseFirst = (country: Country) => {
-    return country.name.charAt(0).toUpperCase() + country.name.slice(1);
-  };
+  return country.name.charAt(0).toUpperCase() + country.name.slice(1);
+};
 
 function CountryPage(props: {
   country: Country;
   matchingCountries: Country[];
 }) {
-
   useEffect(() => {
-    const last: string[] = JSON.parse(localStorage.getItem('last') || '[]')
+    const last: string[] = JSON.parse(localStorage.getItem("last") || "[]");
     last.unshift(props.country.name);
     if (last.length > 3) {
-      last.pop()
+      last.pop();
     }
-    localStorage.setItem('last', JSON.stringify(last))
-  }, [props.country.name])
+    localStorage.setItem("last", JSON.stringify(last));
+  }, [props.country.name]);
 
   return (
     <div>
