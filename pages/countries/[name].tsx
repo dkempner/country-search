@@ -1,20 +1,9 @@
-import { useEffect, useState } from "react";
-import type { InferGetStaticPropsType } from "next";
+import { useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/router";
+import { fetchCountries } from "../../utilities/fetchCountries";
 
 type Country = {
   name: string;
-};
-
-const fetchCountries = async () => {
-  const req = await fetch("https://api.printful.com/countries");
-  const asJson = await req.json();
-  const mapped = Object.values(asJson.result)
-    .map((x: any) => x.name)
-    .sort()
-    .map((x) => ({ name: x && x.toLowerCase() }));
-  return mapped as Country[];
 };
 
 export async function getStaticPaths() {

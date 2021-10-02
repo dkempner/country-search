@@ -1,19 +1,10 @@
 import { useEffect, useState } from "react";
 import type { InferGetStaticPropsType } from "next";
 import Link from "next/link";
+import { fetchCountries } from "../../utilities/fetchCountries";
 
 type Country = {
   name: string;
-};
-
-const fetchCountries = async () => {
-  const req = await fetch("https://api.printful.com/countries");
-  const asJson = await req.json();
-  const mapped = Object.values(asJson.result)
-    .map((x: any) => x.name)
-    .sort()
-    .map((x) => ({ name: x && x.toLowerCase() }));
-  return mapped as Country[];
 };
 
 export const getStaticProps = async () => {
@@ -48,7 +39,7 @@ function Countries({
       <div>
         <ul>
           {lastCountries.map((c) => (
-            <li key={c}>{uppercaseFirst({name: c})}</li>
+            <li key={c}>{uppercaseFirst({ name: c })}</li>
           ))}
         </ul>
       </div>
